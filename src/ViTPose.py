@@ -4,6 +4,7 @@ from torch.nn import (
                         Parameter
                         )
 import Encoder
+import Decoder
 from utils import patchify
 
 class ViTPose(Module):
@@ -47,6 +48,8 @@ class ViTPose(Module):
         self.pos_embedding = Parameter(torch.randn(1, 1+self.num_patches, self.embed_dim))
         self.encoder = Encoder(self.embed_dim, self.hidden_dim, self.num_layers, self.num_heads, self.input_dims,
                                self.num_keypoints, self.downsampling_ratio, self.dropout, self.dtype, self.loss_fn)
+        self.decoder = Decoder(self.embed_dim, self.hidden_dim, num_layers = 2, num_heads = self.num_heads,
+                               num_keypoints = self.num_keypoints, upsample_stages = 2, dropout = self.dropout, use_fpn = True)
 
     def save(self, path):
         checkpoint = {
@@ -102,8 +105,11 @@ class ViTPose(Module):
         patches = patchify(x, patch_size = self.patch_size)
 
         keypoints, feature_maps, out_tokens, out_attention_maps = self.encoder(patches)
+        
         #decoder block can come in here
+        keypoints = self.decoder(out_tokens)
 
+        return keypoints, out_tokens, out_attention_maps
 
 
     def softmax_loss(self, X, y=None):
