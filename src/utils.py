@@ -6,6 +6,56 @@ from torchvision import transforms
 from PIL import Image
 import os
 
+def patchify(x, downsampling_ratio = 16):
+    """
+        A helper function to convert input image(s) into a set of patches 
+        for input to a transformer.
+
+        Input:
+        - x: Input data of shape (N, C, H, W)
+        - downsampling_ratio: The ratio at which we want to reduce the image int0 patches
+    
+        This function requires H and W are multiples of patch_size
+
+        Returns:
+        - out: Output data of shape (N, H'*W', ph*pw, C) where H', W', ph, pw are given by
+          H' = H // patch_size
+          W' = W // patch_size
+          ph = patch_size
+          pw = patch_size
+        """
+    N, C, H, W = x.shape
+    patch_size = (H//downsampling_ratio, W//downsampling_ratio)
+    assert H % patch_size==0, "Height must be divisible by patch_size"
+    assert W % patch_size==0, "Width must be divisible by patch_size"
+    out = None
+    ph, pw = patch_size #patch size dimensions H/d and W/d
+    
+    out = torch.zeros((N, (H*W)//(ph*pw),  (ph*pw)*C)).to(device=x.device)
+    x = x.permute(0,2,3,1)
+
+    
+    
+    patch_no = 0
+    for i in range(0,H,ph):
+        for j in range(0,W,pw):
+            out[:,patch_no, :] = x[:, i:i+ph, j:j+pw,:].flatten(start_dim=1, end_dim=-1)
+            patch_no+=1    
+    
+    return out
+
+
+def loss_cross_entropy(scores, labels):
+    """
+    scores: a tensor [batch_size, num_classes, height, width]
+    labels: a tensor [batch_size, num_classes, height, width]
+    """
+
+    cross_entropy = -torch.sum(labels * torch.log(scores + 1e-10), dim=1)
+    loss = torch.div(torch.sum(cross_entropy), torch.sum(labels)+1e-10)
+
+    return loss
+
 def visualize_feature_maps(feature_maps):
     num_levels = len(feature_maps)
     fig, axes = plt.subplots(1, num_levels, figsize=(4*num_levels, 4))
