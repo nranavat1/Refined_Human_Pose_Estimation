@@ -1,6 +1,7 @@
-# Refining ViTPose 
+# Refining Human Pose Estimation
+[Website](https://sarahtj.github.io/website/)
 
-This project uses Vision Transformers to predict Human Pose Estimation. There is two parts to this project. Part One, improving ViTPose backbone by incorporating a Feature Pyramid Network. Part Two, using ViTPose as a backbone to predict n number of future frames. 
+This project uses Vision Transformers to improve upon the state-of-the-art Human Pose Estimation model, ViTPose. There are two parts to this project. Part One: Improving the ViTPose backbone by incorporating a Feature Pyramid Network. Part Two: Predicting n number of future human poses, taking in a sequence of past human poses. 
 
 Authors: Niva Ranavat, Sarah Jamil, Adithya Raman, Jacob Klinger
 
@@ -49,12 +50,12 @@ venv\Scripts\activate
 pip install numpy pandas matplotlib tensorflow torch torchvision opencv-python scikit-learn seaborn transformers
 ```
 
-## Step 5: Download Required Datasets (3D Poses in the Wild)
+### Step 5: Download Required Datasets (3D Poses in the Wild)
 
-This project part requires uses 3D Poses in the Wild(3DPW) dataset.
+This project part uses the 3D Poses in the Wild(3DPW) dataset. Below are instructions to install the dataset. 
 
 
-### Instructions
+#### Instructions
 
 **Step 1:** Go to the official 3D Poses in The Wild dataset website:  
 [3D Poses in The Wild Dataset]([https://virtualhumans.mpi-inf.mpg.de/3DPW/](https://virtualhumans.mpi-inf.mpg.de/3DPW/evaluation.html))
@@ -81,11 +82,17 @@ This project part requires uses 3D Poses in the Wild(3DPW) dataset.
 
 ### Step 6: Run the code
 
-The first file will load the image files and sequence files. The second file will run the model. By default, this will run the already trained model that we built. 
+The first file will load the image files and sequence files. The second file will run the model. By default, this will run the already trained model that we built on the testing data in the dataset.
 
 ```bash
+cd ./pose_prediction
 python3 extract_images.py
 python3 train_test.py
 ```
+
+# Improving ViTPose:
+
+Repeat Steps 1 - 4
+
 
 
